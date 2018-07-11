@@ -1,13 +1,45 @@
 [
-    {"name": "49th State"},
-    {"name": "Broken Tooth (Moose's Tooth)"},
-    {"name": "Broken Tooth (Bear's Tooth)"},
-    {"name": "Cynosure"},
-    {"name": "Glacier Brewhouse"},
-    {"name": "Resolution"},
-    {"name": "Anchorage Brewing Company"},
-    {"name": "Double Shovel"},
-    {"name": "Midnight Sun"},
-    {"name": "Turnagain Brewing"},
-    {"name": "King Street Brewing Company"},
-]
+    {
+        "name":"49th State",
+        "location":{"lat":61.2180556,"lng":-149.9002778}
+    },
+    {
+        "name":"Broken Tooth (Moose's Tooth)",
+        "location":{"lat":61.1904251,"lng":-149.8688422}
+    },
+    {
+        "name":"Broken Tooth (Bear's Tooth)",
+        "location":{"lat":61.222711,"lng":-149.8429229}
+    },
+    {
+        "name":"Cynosure",
+        "location":{"lat":61.168343,"lng":-149.882415}
+    },
+    {
+        "name":"Glacier Brewhouse",
+        "location":{"lat":61.217774,"lng":-149.8966669}
+    },
+    {
+        "name":"Resolution",
+        "location":{"lat":61.1956812,"lng":-149.8762253}
+    },
+    {
+        "name":"Anchorage Brewing Company",
+        "location":{"lat":61.138793,"lng":-149.8821545}
+    },
+    {
+        "name":"Double Shovel",
+        "location":{"lat":61.16841489999999,"lng":-149.8916284}
+    },
+    {
+        "name":"Midnight Sun",
+        "location":{"lat":61.1472309,"lng":-149.8445081}
+    },
+    {
+        "name":"Turnagain Brewing",
+        "location":{"lat": 61.14906329999999,"lng":-149.8785901}
+    },
+    {
+        "name":"King Street Brewing Company",
+        "location":{"lat":61.1392109,"lng":-149.8799049}
+    }]
