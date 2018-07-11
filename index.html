@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+	<meta name="description" content="Code for Anchorage uses machine learning to find the optimal routes based on Randal Olson's code.">
+	<meta name="author" content="Code for Anchorage based on Randal Olson's work">
+	<title>An optimal biking tour of Anchorage Breweries</title>
+	<style>
+		html, body, #map-canvas {
+			height: 100%;
+			margin: 0px;
+			padding: 0px
+		}
+		#panel {
+			position: absolute;
+			top: 5px;
+			left: 50%;
+			margin-left: -180px;
+			z-index: 5;
+			background-color: #fff;
+			padding: 10px;
+			border: 1px solid #999;
+		}
+	</style>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+	<script>
+		var directionsDisplay, map;
+		var directionsDisplayOptions = {
+			preserveViewport: true,
+			suppressMarkers: true,
+		};
+		var infowindow = new google.maps.InfoWindow({
+			size: new google.maps.Size(150,50)
+		});
+
+		var directionsService = new google.maps.DirectionsService();
+		var start_finish = {
+			name: "49th State Brewing Co.",
+			address: "717 W 3rd Ave, Anchorage, AK 99501",
+			latlong: new google.maps.LatLng(61.2195394, -149.8958217)
+		};
+		var waypoints = [
+			{
+				name: "Resolution Brewing Company",
+				address: "3024 Mountain View Drive, Anchorage, AK 99501",
+				latlong: new google.maps.LatLng(61.2199508, -149.823416)
+			},
+			{
+				name: "Midnight Sun Brewing Co.",
+				address: "8111 Dimond Hook Dr, Anchorage, AK 99507",
+				latlong: new google.maps.LatLng(61.1469204, -149.84449940000002)
+			},
+			{
+				name: "Anchorage Brewing Company",
+				address: "148 West 91st Street, Anchorage, AK 99515",
+				latlong: new google.maps.LatLng(61.13897979999999, -149.8820829)
+			},
+			{
+				name: "King Street Brewing Company",
+				address: "9050 King St, Anchorage, AK 99518",
+				latlong: new google.maps.LatLng(61.1392109, -149.8820936)
+			},
+			{
+				name: "Turnagain Brewing",
+				address: "7920 & 7924 King Street, Anchorage, Alaska 99518",
+				latlong: new google.maps.LatLng(61.14904, -149.878212)
+			},
+			{
+				name: "Mooses Tooth Pub & Pizzeria",
+				address: "3300 Old Seward Hwy, Anchorage, AK",
+				latlong: new google.maps.LatLng(61.19068459999999, -149.8682844)
+			},
+			{
+				name: "Cynosure Brewing",
+				address: "1363, 144 E Potter Dr unit e, Anchorage, AK 99518",
+				latlong: new google.maps.LatLng(61.168343, -149.8846037)
+			},
+			{
+				name: "Glacier Brewhouse",
+				address: "737 W 5th Ave Ste. 110, Anchorage, AK 99501",
+				latlong: new google.maps.LatLng(61.21757050000001, -149.8964654)
+			},
+		]
+
+		function initialize() {
+			var mapOptions = {
+				zoom: 12,
+				center: new google.maps.LatLng(61.180610, -149.868374)
+			};
+			directionsDisplay = new google.maps.DirectionsRenderer(directionsDisplayOptions);
+			map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+			directionsDisplay.setMap(map);
+			calcRoute(start_finish, start_finish, waypoints);
+			createMarker(start_finish)
+			for (var i=0; i<waypoints.length; i++) {
+				createMarker(waypoints[i])
+			}
+		}
+
+		function calcRoute(start, end, routes) {
+			var waypts = [];
+			for (var i = 0; i < routes.length; i++) {
+				waypts.push({
+					location: routes[i].address,
+					stopover: true
+				});
+			}
+			var request = {
+				origin: start.address,
+				destination: end.address,
+				waypoints: waypts,
+				optimizeWaypoints: false,
+				travelMode: google.maps.TravelMode.BICYCLING
+			};
+			directionsService.route(request, function(response, status) {
+				if (status == google.maps.DirectionsStatus.OK) {
+					directionsDisplay.setDirections(response);
+				}
+			});
+		}
+
+		function createMarker(waypoint) {
+			var marker = new google.maps.Marker({
+				position: waypoint.latlong,
+				map: map,
+				icon: new google.maps.MarkerImage("http://brendanbabb.com/bike/beer.png"),
+			});
+			google.maps.event.addListener(marker, 'click', function() {
+				infowindow.setContent('<b>'+waypoint.name+'</b><br>'+waypoint.address);
+				infowindow.open(map, marker);
+			});
+		}
+
+		google.maps.event.addDomListener(window, 'load', initialize);
+	</script>
+</head>
+<body>
+	<div id="map-canvas"></div>
+</body>
