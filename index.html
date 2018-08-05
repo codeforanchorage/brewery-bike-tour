@@ -39,15 +39,18 @@
 			display: block;
 			margin: 10px;
 			width: 100px;
-		
+
 		}
 	</style>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyD4ZO5QaYEUf1BA1DkNhXUtBO-W3tqag2s"></script>
 	<script>
 		var directionsDisplay, map;
+		var markers = [];
+		var bikeLayer;
 		var directionsDisplayOptions = {
 			preserveViewport: true,
 			suppressMarkers: true,
+			suppressBicyclingLayer: true
 		};
 		var infowindow = new google.maps.InfoWindow({
 			size: new google.maps.Size(150,50)
@@ -116,7 +119,7 @@
 		function initialize() {
 			loadPath("Full");
 		}
-		
+
 		function loadPath(pathName){
 
 			if(pathName == 'Full'){
@@ -126,21 +129,24 @@
 			}
 
 			start_finish = waypoints[0];
-			
+
 			var mapOptions = {
 				zoom: 12,
 				center: new google.maps.LatLng(61.180610, -149.868374)
 			};
 			directionsDisplay = new google.maps.DirectionsRenderer(directionsDisplayOptions);
 			map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+			bikeLayer = new google.maps.BicyclingLayer();
+			bikeLayer.setMap(map);
+
 			directionsDisplay.setMap(map);
 			calcRoute(start_finish, start_finish, waypoints);
-			createMarker(start_finish)
+			createMarker(start_finish);
 			for (var i=0; i<waypoints.length; i++) {
-				createMarker(waypoints[i])
+				createMarker(waypoints[i]);
 			}
 		}
-		
+
 
 
 		function calcRoute(start, end, routes) {
@@ -175,6 +181,24 @@
 				infowindow.setContent('<b>'+waypoint.name+'</b><br>'+waypoint.address);
 				infowindow.open(map, marker);
 			});
+			markers.push(marker);
+		}
+
+		function clearMarkers(){
+			for (var i = 0; i < markers.length; i++)
+				markers[i].setMap(null);
+		}
+
+		function clearRoute(){
+			directionsDisplay.setMap(null);
+		}
+
+		function showBikeLayer(){
+			bikeLayer.setMap(map);
+		}
+
+		function hideBikeLayer(){
+			bikeLayer.setMap(null);
 		}
 
 		google.maps.event.addDomListener(window, 'load', initialize);
@@ -187,5 +211,9 @@
 		<button onclick='loadPath("Full")'>Full Path</button>
 		<button onclick='loadPath("North")'>North Path</button>
 		<button onclick='loadPath("South")'>South Path</button>
+		<button onclick='clearMarkers()'>Clear Markers</button>
+		<button onclick='clearRoute()'>Clear Route</button>
+		<button onclick='showBikeLayer()'>Show bike layer</button>
+		<button onclick='hideBikeLayer()'>Hide bike layer</button>
 	</div>
 </body>
