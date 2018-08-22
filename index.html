@@ -42,6 +42,7 @@
 
 		}
 	</style>
+    <script src="MarkerCluster/markerclusterer.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyD4ZO5QaYEUf1BA1DkNhXUtBO-W3tqag2s"></script>
 	<script>
 		var map, bikeLayer;
@@ -59,7 +60,8 @@
 		var start_finish = {};
 		var waypoints = [];
 		var markers = [];
-
+        var markerCluster = null;
+        
 		const DEFAULT_WAYPOINTS = [
 			{
 				name: "49th State Brewing Co.",
@@ -130,11 +132,13 @@
 			loadPath("Full");
 		}
 
-
 		function loadPath(pathName){
-			clearRoute();
-			clearMarkers();
-			if(pathName == 'Full'){
+            clearRoute();
+            markers = [];
+            if(markerCluster){
+                markerCluster.clearMarkers();
+            }
+            if(pathName == 'Full'){
 				waypoints = DEFAULT_WAYPOINTS;
 			}else{
 				waypoints = DEFAULT_WAYPOINTS.filter(x => x.path == pathName);
@@ -145,10 +149,43 @@
 
 			calcRoute(start_finish, start_finish, waypoints);
 			//add markers to route
-			createMarker(start_finish);
+			//createMarker(start_finish);
 			for (var i=0; i<waypoints.length; i++) {
 				createMarker(waypoints[i]);
 			}
+            markerCluster = new MarkerClusterer(map, markers, {
+                styles: [{
+                    url: '/img/m1.png',
+                    height: 53,
+                    width: 53,
+                    textColor: '#fff',
+                    textSize: 12
+                }, {
+                    url: '/img/m2.png',
+                    height: 53,
+                    width: 53,
+                    textColor: '#fff',
+                    textSize: 12
+                }, {
+                    url: '/img/m3.png',
+                    height: 53,
+                    width: 53,
+                    textColor: '#fff',
+                    textSize: 12
+                }, {
+                    url: '/img/m4.png',
+                    height: 53,
+                    width: 53,
+                    textColor: '#fff',
+                    textSize: 12
+                }, {
+                    url: '/img/m5.png',
+                    height: 53,
+                    width: 53,
+                    textColor: '#fff',
+                    textSize: 12
+                }]
+            })
 		}
 
 
@@ -186,19 +223,13 @@
 				infowindow.open(map, marker);
 			});
 			markers.push(marker);
-		}
-
-
-		function clearMarkers(){
-			for (var i = 0; i < markers.length; i++)
-				markers[i].setMap(null);
-		}
+        }
 
 
 		function clearRoute(){
 			waypoints = [];
 			directionsDisplay.setMap(null);
-		}
+        }
 
 
 		google.maps.event.addDomListener(window, 'load', initialize);
