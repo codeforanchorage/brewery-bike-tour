@@ -25,11 +25,13 @@
 		}
 		#menu{
 			background-color:darkgray;
-			position:absolute;
+			position: absolute;
 			padding: 10px;
 			top: 100px;
 			left: 5px;
 			z-index: 6;
+			/* DISABLING MENU BECAUSE CHOOSING A ROUTE MAKES LESS SENSE IF IT'S NOT A LOOP*/
+			display: none
 		}
 		#menu h4{
 			font-family:sans-serif;
@@ -125,13 +127,14 @@
 			},
 			{
 				name: "Anchorage Brewing Company",
+				path: "South",
 				address: "148 West 91st Street, Anchorage, AK 99515",
 				latlong: new google.maps.LatLng(61.1388234, -149.8815848)
 			},
 			{
 				name: "King Street Brewing Company",
 				path: "South",
-				address: "9050 King St, Anchorage, AK 99518",
+				address: "9050 King St, Anchorage, AK 99515",
 				latlong: new google.maps.LatLng(61.1389589, -149.8799729)
 			},
 		]
@@ -167,44 +170,56 @@
 
 			// calcRoute(start_finish, start_finish, waypoints);
 			calcRoute(start_finish, waypoints[waypoints.length - 1], waypoints);
+
 			//add markers to route
 			//createMarker(start_finish);
-			for (var i=0; i<waypoints.length; i++) {
-				createMarker(waypoints[i]);
-			}
-            markerCluster = new MarkerClusterer(map, markers, {
-                styles: [{
-                    url: 'img/m1.png',
-                    height: 53,
-                    width: 53,
-                    textColor: '#fff',
-                    textSize: 12
-                }, {
-                    url: 'img/m2.png',
-                    height: 53,
-                    width: 53,
-                    textColor: '#fff',
-                    textSize: 12
-                }, {
-                    url: 'img/m3.png',
-                    height: 53,
-                    width: 53,
-                    textColor: '#fff',
-                    textSize: 12
-                }, {
-                    url: 'img/m4.png',
-                    height: 53,
-                    width: 53,
-                    textColor: '#fff',
-                    textSize: 12
-                }, {
-                    url: 'img/m5.png',
-                    height: 53,
-                    width: 53,
-                    textColor: '#fff',
-                    textSize: 12
-                }]
-            })
+			waypoints.forEach(function(waypoint) {
+				var marker = new google.maps.Marker({
+					position: waypoint.latlong,
+					map: map,
+					icon: new google.maps.MarkerImage("http://brendanbabb.com/bike/beer.png"),
+				});
+				google.maps.event.addListener(marker, 'click', function() {
+					infowindow.setContent('<b>'+waypoint.name+'</b><br>'+waypoint.address);
+					infowindow.open(map, marker);
+				});
+				markers.push(marker);
+			})
+
+			// COMMENTING OUT BECAUSE IT'S NOT WORKING CONSISTENTLY
+            // markerCluster = new MarkerClusterer(map, markers, {
+            //     styles: [{
+            //         url: 'img/m1.png',
+            //         height: 53,
+            //         width: 53,
+            //         textColor: '#fff',
+            //         textSize: 12
+            //     }, {
+            //         url: 'img/m2.png',
+            //         height: 53,
+            //         width: 53,
+            //         textColor: '#fff',
+            //         textSize: 12
+            //     }, {
+            //         url: 'img/m3.png',
+            //         height: 53,
+            //         width: 53,
+            //         textColor: '#fff',
+            //         textSize: 12
+            //     }, {
+            //         url: 'img/m4.png',
+            //         height: 53,
+            //         width: 53,
+            //         textColor: '#fff',
+            //         textSize: 12
+            //     }, {
+            //         url: 'img/m5.png',
+            //         height: 53,
+            //         width: 53,
+            //         textColor: '#fff',
+            //         textSize: 12
+            //     }]
+            // })
 		}
 
 
@@ -229,20 +244,6 @@
 				}
 			});
 		}
-
-
-		function createMarker(waypoint) {
-			var marker = new google.maps.Marker({
-				position: waypoint.latlong,
-				map: map,
-				icon: new google.maps.MarkerImage("http://brendanbabb.com/bike/beer.png"),
-			});
-			google.maps.event.addListener(marker, 'click', function() {
-				infowindow.setContent('<b>'+waypoint.name+'</b><br>'+waypoint.address);
-				infowindow.open(map, marker);
-			});
-			markers.push(marker);
-        }
 
 
 		function clearRoute(){
