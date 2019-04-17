@@ -61,8 +61,14 @@
 		var waypoints = [];
 		var markers = [];
         var markerCluster = null;
-        
+
 		const DEFAULT_WAYPOINTS = [
+			{
+				name: "Glacier Brewhouse",
+				path: "North",
+				address: "737 W 5th Ave Ste. 110, Anchorage, AK 99501",
+				latlong: new google.maps.LatLng(61.21757050000001, -149.8964654)
+			},
 			{
 				name: "49th State Brewing Co.",
 				path: "North",
@@ -74,6 +80,42 @@
 				path: "North",
 				address: "3024 Mountain View Drive, Anchorage, AK 99501",
 				latlong: new google.maps.LatLng(61.2199508, -149.823416)
+			},
+			{
+				name: "Mooses Tooth Pub & Pizzeria",
+				path: "South",
+				address: "3300 Old Seward Hwy, Anchorage, AK",
+				latlong: new google.maps.LatLng(61.19068459999999, -149.8682844)
+			},
+			{
+				name: "Matanuska Brewing Company",
+				path: "South",
+				address: "2830 C Street, Anchorage, AK 99503",
+				latlong: new google.maps.LatLng(61.1947333, -149.8884164)
+			},
+			{
+				name: "Double Shovel Cider Company",
+				path: "South",
+				address: "502 W 58th Ave C, Anchorage, AK 99518",
+				latlong: new google.maps.LatLng(61.168477, -149.8925806)
+			},
+			{
+				name: "Cynosure Brewing",
+				path: "South",
+				address: "1363, 144 E Potter Dr unit e, Anchorage, AK 99518",
+				latlong: new google.maps.LatLng(61.168569, -149.883072)
+			},
+			{
+				name: "NOT A REAL PLACE TO GO",
+				address: "323 E Dowling Rd, Anchorage, AK",
+				path: "South",
+				// latlong: new google.maps.LatLng(61.1663754, -149.8752732)
+			},
+			{
+				name: "Turnagain Brewing",
+				path: "South",
+				address: "7920 & 7924 King Street, Anchorage, Alaska 99518",
+				latlong: new google.maps.LatLng(61.14904, -149.878212)
 			},
 			{
 				name: "Midnight Sun Brewing Co.",
@@ -91,30 +133,6 @@
 				path: "South",
 				address: "9050 King St, Anchorage, AK 99518",
 				latlong: new google.maps.LatLng(61.1389589, -149.8799729)
-			},
-			{
-				name: "Turnagain Brewing",
-				path: "South",
-				address: "7920 & 7924 King Street, Anchorage, Alaska 99518",
-				latlong: new google.maps.LatLng(61.14904, -149.878212)
-			},
-			{
-				name: "Mooses Tooth Pub & Pizzeria",
-				path: "South",
-				address: "3300 Old Seward Hwy, Anchorage, AK",
-				latlong: new google.maps.LatLng(61.19068459999999, -149.8682844)
-			},
-			{
-				name: "Cynosure Brewing",
-				path: "South",
-				address: "1363, 144 E Potter Dr unit e, Anchorage, AK 99518",
-				latlong: new google.maps.LatLng(61.168569, -149.883072)
-			},
-			{
-				name: "Glacier Brewhouse",
-				path: "North",
-				address: "737 W 5th Ave Ste. 110, Anchorage, AK 99501",
-				latlong: new google.maps.LatLng(61.21757050000001, -149.8964654)
 			},
 		]
 
@@ -147,7 +165,8 @@
 
 			directionsDisplay.setMap(map);
 
-			calcRoute(start_finish, start_finish, waypoints);
+			// calcRoute(start_finish, start_finish, waypoints);
+			calcRoute(start_finish, waypoints[waypoints.length - 1], waypoints);
 			//add markers to route
 			//createMarker(start_finish);
 			for (var i=0; i<waypoints.length; i++) {
