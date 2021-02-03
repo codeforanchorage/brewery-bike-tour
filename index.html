@@ -21,16 +21,19 @@
 			padding: 10px;
 			border: 1px solid #999;
 		}
-		#menu{
+		details {
 			background-color: rgba(0, 0, 0, 0.5);
 			border: 1px solid rgb(0, 0, 0);
 			position: absolute;
 			padding: 10px;
-			top: 100px;
-			left: 5px;
+			top: 62px;
+			left: 10px;
 			z-index: 6;
 			font-family: sans-serif;
 			color: white;
+		}
+		summary {
+			margin: 10px 0;
 		}
 		#menu button{
 			display: block;
@@ -43,7 +46,10 @@
 </head>
 <body>
 	<div id="map-canvas"></div>
-	<div id="menu"></div>
+	<details>
+		<summary>Choose your breweries</summary>
+		<div id="menu"></div>
+	</details>
 
 	<script>
 		var map, bikeLayer;
