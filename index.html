@@ -24,18 +24,15 @@
 			border: 1px solid #999;
 		}
 		#menu{
-			background-color:darkgray;
+			background-color: rgba(0, 0, 0, 0.5);
+			border: 1px solid rgb(0, 0, 0);
 			position: absolute;
 			padding: 10px;
 			top: 100px;
 			left: 5px;
 			z-index: 6;
-			/* DISABLING MENU BECAUSE CHOOSING A ROUTE MAKES LESS SENSE IF IT'S NOT A LOOP*/
-			display: none
-		}
-		#menu h4{
-			font-family:sans-serif;
-			color:white;
+			font-family: sans-serif;
+			color: white;
 		}
 		#menu button{
 			display: block;
@@ -44,8 +41,12 @@
 
 		}
 	</style>
-    <script src="MarkerCluster/markerclusterer.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyD4ZO5QaYEUf1BA1DkNhXUtBO-W3tqag2s"></script>
+</head>
+<body>
+	<div id="map-canvas"></div>
+	<div id="menu"></div>
+
 	<script>
 		var map, bikeLayer;
 		var directionsDisplayOptions = {
@@ -62,82 +63,89 @@
 		var start_finish = {};
 		var waypoints = [];
 		var markers = [];
-        var markerCluster = null;
+		var markerCluster = null;
 
 		const DEFAULT_WAYPOINTS = [
 			{
 				name: "Glacier Brewhouse",
-				path: "North",
 				address: "737 W 5th Ave Ste. 110, Anchorage, AK 99501",
 				latlong: new google.maps.LatLng(61.21757050000001, -149.8964654)
 			},
 			{
 				name: "49th State Brewing Co.",
-				path: "North",
 				address: "717 W 3rd Ave, Anchorage, AK 99501",
 				latlong: new google.maps.LatLng(61.2195394, -149.8958217)
 			},
 			{
 				name: "Resolution Brewing Company",
-				path: "North",
 				address: "3024 Mountain View Drive, Anchorage, AK 99501",
 				latlong: new google.maps.LatLng(61.2199508, -149.823416)
 			},
 			{
 				name: "Mooses Tooth Pub & Pizzeria",
-				path: "South",
 				address: "3300 Old Seward Hwy, Anchorage, AK",
 				latlong: new google.maps.LatLng(61.19068459999999, -149.8682844)
 			},
 			{
+				name: "Onsite Brewing",
+				address: "3211 Denali St, Anchorage, AK 99503",
+				latlong: new google.maps.LatLng(61.1913802, -149.8784974)
+			},
+			{
 				name: "Matanuska Brewing Company",
-				path: "South",
 				address: "2830 C Street, Anchorage, AK 99503",
 				latlong: new google.maps.LatLng(61.1947333, -149.8884164)
 			},
 			{
 				name: "Double Shovel Cider Company",
-				path: "South",
 				address: "502 W 58th Ave C, Anchorage, AK 99518",
 				latlong: new google.maps.LatLng(61.168477, -149.8925806)
 			},
 			{
 				name: "Cynosure Brewing",
-				path: "South",
 				address: "1363, 144 E Potter Dr unit e, Anchorage, AK 99518",
 				latlong: new google.maps.LatLng(61.168569, -149.883072)
 			},
 			{
-				name: "NOT A REAL PLACE TO GO",
-				address: "323 E Dowling Rd, Anchorage, AK",
-				path: "South",
-				// latlong: new google.maps.LatLng(61.1663754, -149.8752732)
-			},
-			{
 				name: "Turnagain Brewing",
-				path: "South",
 				address: "7920 & 7924 King Street, Anchorage, Alaska 99518",
 				latlong: new google.maps.LatLng(61.14904, -149.878212)
 			},
 			{
+				name: "Magnetic North Brewing Co",
+				address: "8861 Golovin St, Anchorage, AK 99507",
+				latlong: new google.maps.LatLng(61.1405217, -149.8392988)
+			},
+			{
 				name: "Midnight Sun Brewing Co.",
-				path: "South",
 				address: "8111 Dimond Hook Dr, Anchorage, AK 99507",
 				latlong: new google.maps.LatLng(61.1469204, -149.84449940000002)
 			},
 			{
 				name: "Anchorage Brewing Company",
-				path: "South",
 				address: "148 West 91st Street, Anchorage, AK 99515",
 				latlong: new google.maps.LatLng(61.1388234, -149.8815848)
 			},
 			{
 				name: "King Street Brewing Company",
-				path: "South",
 				address: "9050 King St, Anchorage, AK 99515",
 				latlong: new google.maps.LatLng(61.1389589, -149.8799729)
 			},
 		]
+
+
+		// build menu
+		var menu = document.querySelector('#menu')
+		DEFAULT_WAYPOINTS.forEach(function(waypoint, index) {
+			var input = document.createElement('input')
+			input.type = 'checkbox'
+			input.onchange = loadPath
+			input.value = index
+			input.checked = true
+			menu.appendChild(input)
+			menu.append(waypoint.name)
+			menu.append(document.createElement('br'))
+		})
 
 
 		function initialize() {
@@ -151,29 +159,9 @@
 			bikeLayer.setMap(map);
 			//Load full path by default
 			loadPath("Full");
-		}
 
-		function loadPath(pathName){
-            clearRoute();
-            markers = [];
-            if(markerCluster){
-                markerCluster.clearMarkers();
-            }
-            if(pathName == 'Full'){
-				waypoints = DEFAULT_WAYPOINTS;
-			}else{
-				waypoints = DEFAULT_WAYPOINTS.filter(x => x.path == pathName);
-			}
-			start_finish = waypoints[0];
-
-			directionsDisplay.setMap(map);
-
-			// calcRoute(start_finish, start_finish, waypoints);
-			calcRoute(start_finish, waypoints[waypoints.length - 1], waypoints);
-
-			//add markers to route
-			//createMarker(start_finish);
-			waypoints.forEach(function(waypoint) {
+			//add markers to map
+			waypoints.forEach(function(waypoint, index) {
 				var marker = new google.maps.Marker({
 					position: waypoint.latlong,
 					map: map,
@@ -185,41 +173,26 @@
 				});
 				markers.push(marker);
 			})
+		}
 
-			// COMMENTING OUT BECAUSE IT'S NOT WORKING CONSISTENTLY
-            // markerCluster = new MarkerClusterer(map, markers, {
-            //     styles: [{
-            //         url: 'img/m1.png',
-            //         height: 53,
-            //         width: 53,
-            //         textColor: '#fff',
-            //         textSize: 12
-            //     }, {
-            //         url: 'img/m2.png',
-            //         height: 53,
-            //         width: 53,
-            //         textColor: '#fff',
-            //         textSize: 12
-            //     }, {
-            //         url: 'img/m3.png',
-            //         height: 53,
-            //         width: 53,
-            //         textColor: '#fff',
-            //         textSize: 12
-            //     }, {
-            //         url: 'img/m4.png',
-            //         height: 53,
-            //         width: 53,
-            //         textColor: '#fff',
-            //         textSize: 12
-            //     }, {
-            //         url: 'img/m5.png',
-            //         height: 53,
-            //         width: 53,
-            //         textColor: '#fff',
-            //         textSize: 12
-            //     }]
-            // })
+		function loadPath(){
+			clearRoute()
+
+			// find the checked breweries
+			document.querySelectorAll('input:checked').forEach(function(input) {
+				waypoints.push(DEFAULT_WAYPOINTS[parseInt(input.value)])
+			})
+
+			start_finish = waypoints[0];
+
+			directionsDisplay.setMap(map);
+
+			calcRoute(start_finish, waypoints[waypoints.length - 1], waypoints);
+
+			// hide unselected breweries
+			document.querySelectorAll('input').forEach(function(input, index) {
+				if (markers[index]) markers[index].setVisible(input.checked)
+			})
 		}
 
 
@@ -249,18 +222,9 @@
 		function clearRoute(){
 			waypoints = [];
 			directionsDisplay.setMap(null);
-        }
+		}
 
 
 		google.maps.event.addDomListener(window, 'load', initialize);
 	</script>
-</head>
-<body>
-	<div id="map-canvas"></div>
-	<div id="menu">
-		<h4>Choose your Path!</h4>
-		<button onclick='loadPath("Full")'>Full Path</button>
-		<button onclick='loadPath("North")'>North Path</button>
-		<button onclick='loadPath("South")'>South Path</button>
-	</div>
 </body>
