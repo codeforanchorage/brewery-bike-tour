@@ -182,6 +182,7 @@
 			beerIcon.style.width = '24px'; // Optional: Set a specific size for your icon
 
 			// Create the AdvancedMarkerElement using the new content property
+			waypoints.forEach(function(waypoint, index) {
 			var marker = new google.maps.marker.AdvancedMarkerElement({
     			position: waypoint.latlong,
     			map: map,
