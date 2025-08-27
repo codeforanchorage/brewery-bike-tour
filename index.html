@@ -315,6 +315,12 @@
 		document.addEventListener('DOMContentLoaded', initMap);
 
 		function loadPath() {
+			// Make sure directionsDisplay is initialized before using it
+			if (!directionsDisplay) {
+				console.log('DirectionsDisplay not yet initialized');
+				return;
+			}
+
 			clearRoute();
 
 			// Find the checked breweries
@@ -367,7 +373,9 @@
 		}
 
 		function clearRoute() {
-			directionsDisplay.setMap(null);
+			if (directionsDisplay) {
+				directionsDisplay.setMap(null);
+			}
 		}
 
 
