@@ -40,13 +40,6 @@
 			width: 100px;
 		}
 	</style>
-	<script>
-		// Modern async loading pattern for Google Maps
-		(g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.googleapis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
-			key: "AIzaSyAIMb67sJ28dMu_z2MCKYtxeMg0y2NMJCw",
-			v: "weekly"
-		});
-	</script>
 </head>
 <body>
 	<div id="map-canvas"></div>
@@ -56,104 +49,99 @@
 	</details>
 
 	<script>
-		var map, bikeLayer;
-		var directionsDisplayOptions = {
+		// Global variables - declared but not initialized until API loads
+		let map, bikeLayer, directionsDisplay, directionsService, infowindow;
+		let waypoints = [];
+		let markers = [];
+		let start_finish = {};
+
+		const directionsDisplayOptions = {
 			preserveViewport: true,
 			suppressMarkers: true,
 			suppressBicyclingLayer: true
 		};
-		var directionsDisplay = new google.maps.DirectionsRenderer(directionsDisplayOptions);
-		var infowindow = new google.maps.InfoWindow({
-			size: new google.maps.Size(150,50)
-		});
-
-		var directionsService = new google.maps.DirectionsService();
-		var start_finish = {};
-		var waypoints = [];
-		var markers = [];
 
 		const DEFAULT_WAYPOINTS = [
 			{
 				name: "Glacier Brewhouse",
 				address: "737 W 5th Ave Ste. 110, Anchorage, AK 99501",
-				latlong: new google.maps.LatLng(61.21757050000001, -149.8964654)
+				latlong: { lat: 61.21757050000001, lng: -149.8964654 }
 			},
 			{
 				name: "49th State Brewing Co.",
 				address: "717 W 3rd Ave, Anchorage, AK 99501",
-				latlong: new google.maps.LatLng(61.2195394, -149.8958217)
+				latlong: { lat: 61.2195394, lng: -149.8958217 }
 			},
 			{
 				name: "Mooses Tooth Pub & Pizzeria",
 				address: "3300 Old Seward Hwy, Anchorage, AK",
-				latlong: new google.maps.LatLng(61.19068459999999, -149.8682844)
+				latlong: { lat: 61.19068459999999, lng: -149.8682844 }
 			},
 			{
 				name: "Onsite Brewing",
 				address: "3211 Denali St, Anchorage, AK 99503",
-				latlong: new google.maps.LatLng(61.1913606, -149.8764497)
+				latlong: { lat: 61.1913606, lng: -149.8764497 }
 			},
 			{
 				name: "Double Shovel Cider Company",
 				address: "502 W 58th Ave C, Anchorage, AK 99518",
-				latlong: new google.maps.LatLng(61.168699, -149.8916839)
+				latlong: { lat: 61.168699, lng: -149.8916839 }
 			},
 			{
 				name: "Ship Creek Brewing Company",
 				address: "5801 Arctic Blvd, Anchorage, AK 99518",
-				latlong: new google.maps.LatLng(61.168644968405815, -149.89713729786095)
+				latlong: { lat: 61.168644968405815, lng: -149.89713729786095 }
 			},
 			{
 				name: "Brewerks",
 				address: "625 W 59th Ave, Units A/B, Anchorage, AK 99518",
-				latlong: new google.maps.LatLng(61.1675884, -149.8944055)
+				latlong: { lat: 61.1675884, lng: -149.8944055 }
 			},
 			{
 				name: "Cynosure Brewing",
 				address: "1363, 144 E Potter Dr unit e, Anchorage, AK 99518",
-				latlong: new google.maps.LatLng(61.16843006357235, -149.88195739135773)
+				latlong: { lat: 61.16843006357235, lng: -149.88195739135773 }
 			},
 			{
 				name: "Turnagain Brewing",
 				address: "7920 & 7924 King Street, Anchorage, Alaska 99518",
-				latlong: new google.maps.LatLng(61.14904, -149.878212)
+				latlong: { lat: 61.14904, lng: -149.878212 }
 			},
 			{
 				name: "Zip Kombucha",
 				address: "8161 Schoon Street, Anchorage, Alaska 99518",
-				latlong: new google.maps.LatLng(61.14728812592769, -149.87438178351474)
+				latlong: { lat: 61.14728812592769, lng: -149.87438178351474 }
 			},
 			{
 				name: "Midnight Sun Brewing Co.",
 				address: "8111 Dimond Hook Dr, Anchorage, AK 99507",
-				latlong: new google.maps.LatLng(61.1469204, -149.84449940000002)
+				latlong: { lat: 61.1469204, lng: -149.84449940000002 }
 			},
 			{
 				name: "Magnetic North Brewing Co",
 				address: "8861 Golovin St, Anchorage, AK 99507",
-				latlong: new google.maps.LatLng(61.1404826, -149.8372688)
+				latlong: { lat: 61.1404826, lng: -149.8372688 }
 			},
 			{
 				name: "Anchorage Brewing Company",
 				address: "148 West 91st Street, Anchorage, AK 99515",
-				latlong: new google.maps.LatLng(61.1388234, -149.8815848)
+				latlong: { lat: 61.1388234, lng: -149.8815848 }
 			},
 			{
 				name: "King Street Brewing Company",
 				address: "9050 King St, Anchorage, AK 99515",
-				latlong: new google.maps.LatLng(61.1389589, -149.8799729)
+				latlong: { lat: 61.1389589, lng: -149.8799729 }
 			},
 			{
 				name: "Ravens Ring Brewing Company",
 				address: "12150 Industry Way Unit Q-1, Anchorage, AK 99515",
-				latlong: new google.maps.LatLng(61.1107670510692, -149.86213252689595)
+				latlong: { lat: 61.1107670510692, lng: -149.86213252689595 }
 			}
 		];
 
 		// Function to create a beer icon element
 		function createBeerIcon() {
 			const beerIcon = document.createElement('div');
-			// Beer emoji with text-shadow outline
 			beerIcon.innerHTML = '🍺';
 			beerIcon.style.fontSize = '24px';
 			beerIcon.style.cursor = 'pointer';
@@ -172,69 +160,93 @@
 			return beerIcon;
 		}
 
-		// build menu
-		var menu = document.querySelector('#menu');
-		DEFAULT_WAYPOINTS.forEach(function(waypoint, index) {
-			var input = document.createElement('input');
-			input.type = 'checkbox';
-			input.onchange = loadPath;
-			input.value = index;
-			input.checked = true;
-			menu.appendChild(input);
-			menu.append(waypoint.name);
-			menu.append(document.createElement('br'));
-		});
-
-		async function initMap() {
-			// Import required libraries
-			const { Map } = await google.maps.importLibrary("maps");
-			const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-			
-			var mapOptions = {
-				zoom: 12,
-				center: new google.maps.LatLng(61.180610, -149.868374),
-				mapId: '2aaf232f2cd9f38f1a5aca67'
-			};
-			map = new Map(document.getElementById('map-canvas'), mapOptions);
-			
-			// Add bike layer by default
-			bikeLayer = new google.maps.BicyclingLayer();
-			bikeLayer.setMap(map);
-
-			// Create Advanced Markers for all breweries
+		// Build menu once DOM is loaded
+		function buildMenu() {
+			const menu = document.querySelector('#menu');
 			DEFAULT_WAYPOINTS.forEach(function(waypoint, index) {
-				var marker = new AdvancedMarkerElement({
-					position: waypoint.latlong,
-					map: map,
-					content: createBeerIcon(),
-					title: waypoint.name
-				});
-
-				marker.addListener('click', function() {
-					infowindow.setContent('<b>' + waypoint.name + '</b><br>' + waypoint.address);
-					infowindow.open(map, marker);
-				});
-				
-				markers.push(marker);
+				const input = document.createElement('input');
+				input.type = 'checkbox';
+				input.onchange = loadPath;
+				input.value = index;
+				input.checked = true;
+				menu.appendChild(input);
+				menu.append(waypoint.name);
+				menu.append(document.createElement('br'));
 			});
-
-			// Load full path by default
-			loadPath();
 		}
 
-		// Initialize when DOM is loaded
-		document.addEventListener('DOMContentLoaded', initMap);
+		async function initMap() {
+			try {
+				console.log('Loading Google Maps libraries...');
+				
+				// Import all required libraries
+				const { Map } = await google.maps.importLibrary("maps");
+				const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+				const { DirectionsService, DirectionsRenderer } = await google.maps.importLibrary("routes");
+				
+				console.log('Libraries loaded successfully');
+
+				// Create map
+				const mapOptions = {
+					zoom: 12,
+					center: { lat: 61.180610, lng: -149.868374 },
+					mapId: '2aaf232f2cd9f38f1a5aca67'
+				};
+				
+				map = new Map(document.getElementById('map-canvas'), mapOptions);
+				console.log('Map created');
+
+				// Initialize services
+				directionsDisplay = new DirectionsRenderer(directionsDisplayOptions);
+				directionsService = new DirectionsService();
+				infowindow = new google.maps.InfoWindow({
+					size: new google.maps.Size(150,50)
+				});
+				
+				console.log('Services initialized');
+
+				// Add bike layer
+				bikeLayer = new google.maps.BicyclingLayer();
+				bikeLayer.setMap(map);
+
+				// Create markers
+				DEFAULT_WAYPOINTS.forEach(function(waypoint, index) {
+					const marker = new AdvancedMarkerElement({
+						position: waypoint.latlong,
+						map: map,
+						content: createBeerIcon(),
+						title: waypoint.name
+					});
+
+					marker.addListener('click', function() {
+						infowindow.setContent('<b>' + waypoint.name + '</b><br>' + waypoint.address);
+						infowindow.open(map, marker);
+					});
+					
+					markers.push(marker);
+				});
+
+				console.log('Markers created');
+
+				// Load initial path
+				loadPath();
+				
+				console.log('Map initialization complete');
+				
+			} catch (error) {
+				console.error('Error initializing map:', error);
+			}
+		}
 
 		function loadPath() {
-			// Make sure directionsDisplay is initialized before using it
-			if (!directionsDisplay) {
-				console.log('DirectionsDisplay not yet initialized');
+			if (!directionsDisplay || !directionsService) {
+				console.log('DirectionsService not ready yet');
 				return;
 			}
 
 			clearRoute();
 
-			// Find the checked breweries
+			// Find checked breweries
 			waypoints = [];
 			document.querySelectorAll('input:checked').forEach(function(input) {
 				waypoints.push(DEFAULT_WAYPOINTS[parseInt(input.value)]);
@@ -246,29 +258,26 @@
 				calcRoute(start_finish, waypoints[waypoints.length - 1], waypoints);
 			}
 
-			// Hide/show markers based on selection
+			// Show/hide markers
 			document.querySelectorAll('input').forEach(function(input, index) {
 				if (markers[index]) {
-					if (markers[index].setMap) {
-						// Regular marker
-						markers[index].setMap(input.checked ? map : null);
-					} else {
-						// Advanced marker
-						markers[index].map = input.checked ? map : null;
-					}
+					markers[index].map = input.checked ? map : null;
 				}
 			});
 		}
 
 		function calcRoute(start, end, routes) {
-			var waypts = [];
-			for (var i = 1; i < routes.length - 1; i++) {
+			if (!directionsService) return;
+			
+			const waypts = [];
+			for (let i = 1; i < routes.length - 1; i++) {
 				waypts.push({
 					location: routes[i].address,
 					stopover: true
 				});
 			}
-			var request = {
+			
+			const request = {
 				origin: start.address,
 				destination: end.address,
 				waypoints: waypts,
@@ -276,9 +285,12 @@
 				travelMode: google.maps.TravelMode.BICYCLING,
 				avoidHighways: true
 			};
+			
 			directionsService.route(request, function(response, status) {
-				if (status == google.maps.DirectionsStatus.OK) {
+				if (status === google.maps.DirectionsStatus.OK) {
 					directionsDisplay.setDirections(response);
+				} else {
+					console.error('Directions request failed:', status);
 				}
 			});
 		}
@@ -289,7 +301,15 @@
 			}
 		}
 
+		// Load Google Maps API
+		(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await(a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.googleapis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+		({key:"AIzaSyAIMb67sJ28dMu_z2MCKYtxeMg0y2NMJCw",v:"weekly"});
 
+		// Initialize everything when DOM is ready
+		document.addEventListener('DOMContentLoaded', function() {
+			buildMenu();
+			initMap();
+		});
 	</script>
 </body>
 </html>
