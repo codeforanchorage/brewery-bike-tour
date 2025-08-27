@@ -223,7 +223,7 @@
 				destination: end.address,
 				waypoints: waypts,
 				optimizeWaypoints: false,
-				travelMode: google.maps.TravelMode.BICYCLING
+				travelMode: google.maps.TravelMode.BICYCLING,
 				avoid: ["highways"]
 			};
 			directionsService.route(request, function(response, status) {
