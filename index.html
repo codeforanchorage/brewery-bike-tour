@@ -153,11 +153,62 @@
 		// Function to create a beer icon element
 		function createBeerIcon() {
 			const beerIcon = document.createElement('div');
-			// Option 1: Beer emoji with dark background circle
+			// Beer emoji with text-shadow outline
+			beerIcon.innerHTML = '🍺';
+			beerIcon.style.fontSize = '24px';
+			beerIcon.style.cursor = 'pointer';
+			beerIcon.style.color = 'transparent';
+			beerIcon.style.textShadow = `
+				-1px -1px 0 #000,
+				1px -1px 0 #000,
+				-1px 1px 0 #000,
+				1px 1px 0 #000,
+				-2px -2px 0 #000,
+				2px -2px 0 #000,
+				-2px 2px 0 #000,
+				2px 2px 0 #000
+			`;
+			beerIcon.style.filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
+			return beerIcon;
+		}
+
+		// Alternative icon options - uncomment the one you prefer:
+		
+		// Option 2: Clinking beer mugs with text-shadow outline
+		function createBeerIconAlt2() {
+			const beerIcon = document.createElement('div');
+			beerIcon.innerHTML = '🍻';
+			beerIcon.style.fontSize = '22px';
+			beerIcon.style.cursor = 'pointer';
+			beerIcon.style.color = 'transparent';
+			beerIcon.style.textShadow = `
+				-1px -1px 0 #000,
+				1px -1px 0 #000,
+				-1px 1px 0 #000,
+				1px 1px 0 #000,
+				-2px -2px 0 #000,
+				2px -2px 0 #000,
+				-2px 2px 0 #000,
+				2px 2px 0 #000
+			`;
+			beerIcon.style.filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))';
+			return beerIcon;
+		}
+
+		// Option 3: Beer emoji with background circle AND text outline
+		function createBeerIconWithBackground() {
+			const beerIcon = document.createElement('div');
 			beerIcon.innerHTML = '🍺';
 			beerIcon.style.fontSize = '20px';
 			beerIcon.style.cursor = 'pointer';
-			beerIcon.style.backgroundColor = '#333';
+			beerIcon.style.color = 'transparent';
+			beerIcon.style.textShadow = `
+				-1px -1px 0 #000,
+				1px -1px 0 #000,
+				-1px 1px 0 #000,
+				1px 1px 0 #000
+			`;
+			beerIcon.style.backgroundColor = '#FFA500';
 			beerIcon.style.borderRadius = '50%';
 			beerIcon.style.width = '32px';
 			beerIcon.style.height = '32px';
@@ -169,27 +220,32 @@
 			return beerIcon;
 		}
 
-		// Alternative icon options - uncomment the one you prefer:
-		
-		// Option 2: Clinking beer mugs with better contrast
-		function createBeerIconAlt2() {
+		// Option 4: Thick outline version for maximum visibility
+		function createBeerIconThickOutline() {
 			const beerIcon = document.createElement('div');
-			beerIcon.innerHTML = '🍻';
-			beerIcon.style.fontSize = '18px';
+			beerIcon.innerHTML = '🍺';
+			beerIcon.style.fontSize = '24px';
 			beerIcon.style.cursor = 'pointer';
-			beerIcon.style.backgroundColor = '#FFA500';
-			beerIcon.style.borderRadius = '50%';
-			beerIcon.style.width = '30px';
-			beerIcon.style.height = '30px';
-			beerIcon.style.display = 'flex';
-			beerIcon.style.alignItems = 'center';
-			beerIcon.style.justifyContent = 'center';
-			beerIcon.style.border = '3px solid #000';
-			beerIcon.style.boxShadow = '0 2px 6px rgba(0,0,0,0.5)';
+			beerIcon.style.color = 'transparent';
+			beerIcon.style.textShadow = `
+				-2px -2px 0 #000,
+				2px -2px 0 #000,
+				-2px 2px 0 #000,
+				2px 2px 0 #000,
+				-3px -3px 0 #000,
+				3px -3px 0 #000,
+				-3px 3px 0 #000,
+				3px 3px 0 #000,
+				-1px 0 0 #000,
+				1px 0 0 #000,
+				0 -1px 0 #000,
+				0 1px 0 #000
+			`;
+			beerIcon.style.filter = 'drop-shadow(0 3px 6px rgba(0,0,0,0.5))';
 			return beerIcon;
 		}
 
-		// Option 3: Custom SVG beer icon with excellent contrast
+		// Custom SVG beer icon with excellent contrast (keeping this option)
 		function createBeerIconSVG() {
 			const beerIcon = document.createElement('div');
 			beerIcon.innerHTML = `
@@ -202,27 +258,6 @@
 			`;
 			beerIcon.style.cursor = 'pointer';
 			beerIcon.style.filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))';
-			return beerIcon;
-		}
-
-		// Option 4: Text-based with high contrast
-		function createBeerIconText() {
-			const beerIcon = document.createElement('div');
-			beerIcon.innerHTML = 'B';
-			beerIcon.style.fontSize = '16px';
-			beerIcon.style.fontWeight = 'bold';
-			beerIcon.style.cursor = 'pointer';
-			beerIcon.style.backgroundColor = '#FF6B35';
-			beerIcon.style.color = '#FFF';
-			beerIcon.style.borderRadius = '50%';
-			beerIcon.style.width = '26px';
-			beerIcon.style.height = '26px';
-			beerIcon.style.display = 'flex';
-			beerIcon.style.alignItems = 'center';
-			beerIcon.style.justifyContent = 'center';
-			beerIcon.style.border = '3px solid #000';
-			beerIcon.style.boxShadow = '0 3px 6px rgba(0,0,0,0.4)';
-			beerIcon.style.textShadow = '1px 1px 2px rgba(0,0,0,0.8)';
 			return beerIcon;
 		}
 
@@ -239,71 +274,45 @@
 			menu.append(document.createElement('br'));
 		});
 
-		async function initialize() {
+		async function initMap() {
+			// Import required libraries
+			const { Map } = await google.maps.importLibrary("maps");
+			const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+			
 			var mapOptions = {
 				zoom: 12,
 				center: new google.maps.LatLng(61.180610, -149.868374),
 				mapId: '2aaf232f2cd9f38f1a5aca67'
 			};
-			map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+			map = new Map(document.getElementById('map-canvas'), mapOptions);
 			
 			// Add bike layer by default
 			bikeLayer = new google.maps.BicyclingLayer();
 			bikeLayer.setMap(map);
 
-			// Wait for the marker library to load, then create markers
-			try {
-				const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+			// Create Advanced Markers for all breweries
+			DEFAULT_WAYPOINTS.forEach(function(waypoint, index) {
+				var marker = new AdvancedMarkerElement({
+					position: waypoint.latlong,
+					map: map,
+					content: createBeerIcon(),
+					title: waypoint.name
+				});
+
+				marker.addListener('click', function() {
+					infowindow.setContent('<b>' + waypoint.name + '</b><br>' + waypoint.address);
+					infowindow.open(map, marker);
+				});
 				
-				// Create markers for all breweries
-				DEFAULT_WAYPOINTS.forEach(function(waypoint, index) {
-					var marker = new AdvancedMarkerElement({
-						position: waypoint.latlong,
-						map: map,
-						content: createBeerIcon(),
-						title: waypoint.name
-					});
-
-					marker.addListener('click', function() {
-						infowindow.setContent('<b>' + waypoint.name + '</b><br>' + waypoint.address);
-						infowindow.open(map, marker);
-					});
-					
-					markers.push(marker);
-				});
-			} catch (error) {
-				console.log('Advanced markers not available, falling back to regular markers');
-				// Fallback to regular markers if Advanced Markers fail
-				DEFAULT_WAYPOINTS.forEach(function(waypoint, index) {
-					var marker = new google.maps.Marker({
-						position: waypoint.latlong,
-						map: map,
-						title: waypoint.name,
-						icon: {
-							url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-								<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-									<circle cx="16" cy="16" r="14" fill="#FFA500" stroke="#000" stroke-width="3"/>
-									<rect x="10" y="8" width="8" height="12" rx="1" fill="#FFD700" stroke="#8B4513" stroke-width="1"/>
-									<rect x="10" y="9" width="8" height="2" fill="#FFFF99"/>
-									<rect x="18" y="12" width="3" height="6" rx="1" fill="#D2691E" stroke="#8B4513" stroke-width="1"/>
-								</svg>
-							`),
-							scaledSize: new google.maps.Size(32, 32)
-						}
-					});
-
-					marker.addListener('click', function() {
-						infowindow.setContent('<b>' + waypoint.name + '</b><br>' + waypoint.address);
-						infowindow.open(map, marker);
-					});
-					
-					markers.push(marker);
-				});
-			}
+				markers.push(marker);
+			});
 
 			// Load full path by default
 			loadPath();
 		}
+
+		// Initialize when DOM is loaded
+		document.addEventListener('DOMContentLoaded', initMap);
 
 		function loadPath() {
 			clearRoute();
@@ -361,7 +370,7 @@
 			directionsDisplay.setMap(null);
 		}
 
-		google.maps.event.addDomListener(window, 'load', initialize);
+		google.maps.event.addDomListener(window, 'load', initMap);
 	</script>
 </body>
 </html>
