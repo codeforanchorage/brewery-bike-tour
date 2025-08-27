@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,7 +38,6 @@
 			display: block;
 			margin: 10px;
 			width: 100px;
-
 		}
 	</style>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIMb67sJ28dMu_z2MCKYtxeMg0y2NMJCw&=3.exp&libraries=marker"></script>
@@ -56,7 +54,7 @@
 		var directionsDisplayOptions = {
 			preserveViewport: true,
 			suppressMarkers: true,
-			suppressBicyclingLayer: true //Otherwise layer disappears when route is changed
+			suppressBicyclingLayer: true
 		};
 		var directionsDisplay = new google.maps.DirectionsRenderer(directionsDisplayOptions);
 		var infowindow = new google.maps.InfoWindow({
@@ -67,7 +65,6 @@
 		var start_finish = {};
 		var waypoints = [];
 		var markers = [];
-		var markerCluster = null;
 
 		const DEFAULT_WAYPOINTS = [
 			{
@@ -145,22 +142,29 @@
 				address: "12150 Industry Way Unit Q-1, Anchorage, AK 99515",
 				latlong: new google.maps.LatLng(61.1107670510692, -149.86213252689595)
 			}
-		]
+		];
 
+		// Function to create a beer icon element
+		function createBeerIcon() {
+			const beerIcon = document.createElement('div');
+			beerIcon.innerHTML = '🍺';
+			beerIcon.style.fontSize = '24px';
+			beerIcon.style.cursor = 'pointer';
+			return beerIcon;
+		}
 
 		// build menu
-		var menu = document.querySelector('#menu')
+		var menu = document.querySelector('#menu');
 		DEFAULT_WAYPOINTS.forEach(function(waypoint, index) {
-			var input = document.createElement('input')
-			input.type = 'checkbox'
-			input.onchange = loadPath
-			input.value = index
-			input.checked = true
-			menu.appendChild(input)
-			menu.append(waypoint.name)
-			menu.append(document.createElement('br'))
-		})
-
+			var input = document.createElement('input');
+			input.type = 'checkbox';
+			input.onchange = loadPath;
+			input.value = index;
+			input.checked = true;
+			menu.appendChild(input);
+			menu.append(waypoint.name);
+			menu.append(document.createElement('br'));
+		});
 
 		function initialize() {
 			var mapOptions = {
@@ -169,58 +173,58 @@
 				mapId: '2aaf232f2cd9f38f1a5aca67'
 			};
 			map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-			//Add bike layer by default
+			
+			// Add bike layer by default
 			bikeLayer = new google.maps.BicyclingLayer();
 			bikeLayer.setMap(map);
-			//Load full path by default
-			loadPath("Full");
 
-			//add markers to map
-			// Create a new HTML img element for the marker icon
-			const beerIcon = document.createElement('img');
-			beerIcon.src = "img/beer.png";
-			beerIcon.style.width = '24px'; // Optional: Set a specific size for your icon
+			// Create markers for all breweries
+			DEFAULT_WAYPOINTS.forEach(function(waypoint, index) {
+				var marker = new google.maps.marker.AdvancedMarkerElement({
+					position: waypoint.latlong,
+					map: map,
+					content: createBeerIcon(),
+					title: waypoint.name
+				});
 
-			// Create the AdvancedMarkerElement using the new content property
-			waypoints.forEach(function(waypoint, index) {
-			var marker = new google.maps.marker.AdvancedMarkerElement({
-    			position: waypoint.latlong,
-    			map: map,
-    			content: beerIcon, // Assign the HTML element here
-			});
-
-				google.maps.event.addListener(marker, 'click', function() {
-					infowindow.setContent('<b>'+waypoint.name+'</b><br>'+waypoint.address);
+				marker.addListener('click', function() {
+					infowindow.setContent('<b>' + waypoint.name + '</b><br>' + waypoint.address);
 					infowindow.open(map, marker);
 				});
+				
 				markers.push(marker);
-			})
+			});
+
+			// Load full path by default
+			loadPath();
 		}
 
-		function loadPath(){
-			clearRoute()
+		function loadPath() {
+			clearRoute();
 
-			// find the checked breweries
+			// Find the checked breweries
+			waypoints = [];
 			document.querySelectorAll('input:checked').forEach(function(input) {
-				waypoints.push(DEFAULT_WAYPOINTS[parseInt(input.value)])
-			})
+				waypoints.push(DEFAULT_WAYPOINTS[parseInt(input.value)]);
+			});
 
-			start_finish = waypoints[0];
+			if (waypoints.length > 0) {
+				start_finish = waypoints[0];
+				directionsDisplay.setMap(map);
+				calcRoute(start_finish, waypoints[waypoints.length - 1], waypoints);
+			}
 
-			directionsDisplay.setMap(map);
-
-			calcRoute(start_finish, waypoints[waypoints.length - 1], waypoints);
-
-			// hide unselected breweries
+			// Hide/show markers based on selection
 			document.querySelectorAll('input').forEach(function(input, index) {
-				if (markers[index]) markers[index].setVisible(input.checked)
-			})
+				if (markers[index]) {
+					markers[index].map = input.checked ? map : null;
+				}
+			});
 		}
-
 
 		function calcRoute(start, end, routes) {
 			var waypts = [];
-			for (var i = 0; i < routes.length; i++) {
+			for (var i = 1; i < routes.length - 1; i++) {
 				waypts.push({
 					location: routes[i].address,
 					stopover: true
@@ -241,13 +245,11 @@
 			});
 		}
 
-
-		function clearRoute(){
-			waypoints = [];
+		function clearRoute() {
 			directionsDisplay.setMap(null);
 		}
-
 
 		google.maps.event.addDomListener(window, 'load', initialize);
 	</script>
 </body>
+</html>
