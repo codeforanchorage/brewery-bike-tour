@@ -175,11 +175,17 @@
 			loadPath("Full");
 
 			//add markers to map
+			// Create a new HTML img element for the marker icon
+			const beerIcon = document.createElement('img');
+			beerIcon.src = "img/beer.png";
+			beerIcon.style.width = '24px'; // Optional: Set a specific size for your icon
+
+			// Create the AdvancedMarkerElement using the new content property
 			waypoints.forEach(function(waypoint, index) {
 				var marker = new google.maps.marker.AdvancedMarkerElement({
 					position: waypoint.latlong,
 					map: map,
-					content: new google.maps.MarkerImage("img/beer.png"),
+					content: beerIcon, 
 				});
 				google.maps.event.addListener(marker, 'click', function() {
 					infowindow.setContent('<b>'+waypoint.name+'</b><br>'+waypoint.address);
