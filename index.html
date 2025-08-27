@@ -224,6 +224,7 @@
 				waypoints: waypts,
 				optimizeWaypoints: false,
 				travelMode: google.maps.TravelMode.BICYCLING
+				avoid: ["highways"]
 			};
 			directionsService.route(request, function(response, status) {
 				if (status == google.maps.DirectionsStatus.OK) {
