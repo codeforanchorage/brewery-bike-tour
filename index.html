@@ -145,16 +145,12 @@
 			beerIcon.innerHTML = '🍺';
 			beerIcon.style.fontSize = '24px';
 			beerIcon.style.cursor = 'pointer';
-			beerIcon.style.color = 'transparent';
+			// Keep the emoji visible but add a subtle black outline
 			beerIcon.style.textShadow = `
 				-1px -1px 0 #000,
 				1px -1px 0 #000,
 				-1px 1px 0 #000,
-				1px 1px 0 #000,
-				-2px -2px 0 #000,
-				2px -2px 0 #000,
-				-2px 2px 0 #000,
-				2px 2px 0 #000
+				1px 1px 0 #000
 			`;
 			beerIcon.style.filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
 			return beerIcon;
