@@ -176,7 +176,7 @@
 
 			//add markers to map
 			waypoints.forEach(function(waypoint, index) {
-				var marker = new google.maps.Marker({
+				var marker = new google.maps.marker.AdvancedMarkerElement({
 					position: waypoint.latlong,
 					map: map,
 					icon: new google.maps.MarkerImage("img/beer.png"),
