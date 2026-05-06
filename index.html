@@ -115,7 +115,8 @@
 			{
 				name: "Magnetic North Brewing Co",
 				address: "8861 Golovin St, Anchorage, AK 99507",
-				latlong: { lat: 61.1404826, lng: -149.8372688 }
+				latlong: { lat: 61.1404826, lng: -149.8372688 },
+				url: "https://magneticnorthbrewingco.com/"
 			},
 			{
 				name: "Anchorage Brewing Company",
@@ -210,7 +211,7 @@
 					});
 
 					marker.addListener('click', function() {
-						infowindow.setContent('<b>' + waypoint.name + '</b><br>' + waypoint.address);
+						infowindow.setContent('<b><a href="'+ waypoint.url+'">'+ waypoint.name + '</a></b><br>' + waypoint.address);
 						infowindow.open(map, marker);
 					});
 					
